@@ -8,7 +8,7 @@ The Application Insights Exporter allows to read traces exported from Azure Appl
 ### Exported Trace in Dynatrace
 ![](dt-trace.png)
 
-## How does it work?
+## How does it work??
 The project comes with an Azure Function, bound to an EventHub from which it receives and then converts and forwards the telemetry. 
 
 Supported [Application Insights telemetry types](https://learn.microsoft.com/en-us/azure/azure-monitor/app/data-model) are: 
