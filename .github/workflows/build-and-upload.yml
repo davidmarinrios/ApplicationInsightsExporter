@@ -1,0 +1,46 @@
+name: Build and Upload Function App
+ 
+on:
+  push:
+    paths:
+      - 'ApplicationInsightsForwarder/**'
+ 
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+ 
+    defaults:
+      run:
+        working-directory: ApplicationInsightsForwarder
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8'
+ 
+      - name: Restore dependencies
+        run: dotnet restore
+ 
+      - name: Publish Azure Function
+        run: dotnet publish -c Release -o publish
+ 
+      - name: Upload ZIP to Azure Storage
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload \
+              --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} \
+              --container-name function-code \
+              --name function.zip \
+              --file ./publish.zip \
+              --auth-mode key \
+              --account-key ${{ secrets.AZURE_STORAGE_KEY }}
+ 
+      - name: Create ZIP
+        run: |
+          cd publish
+          zip -r ../publish.zip .
